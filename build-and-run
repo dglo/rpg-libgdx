@@ -1,0 +1,4 @@
+#!/bin/sh
+
+mvn -Pdesktop clean install &&
+java -jar desktop/target/rpg-desktop-0.1-SNAPSHOT-jar-with-dependencies.jar
