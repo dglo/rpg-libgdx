@@ -13,7 +13,7 @@
 	<name>RPG desktop</name>
 
 	<properties>
-		<mainClass>org.glowacki.rpg.java.RPGDesktop</mainClass>
+		<mainClass>org.glowacki.rpg.RPGDesktop</mainClass>
 	</properties>
 
 	<build>

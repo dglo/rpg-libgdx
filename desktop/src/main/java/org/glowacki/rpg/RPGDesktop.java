@@ -9,9 +9,12 @@ public class RPGDesktop
 {
     public static void main(String[] args)
     {
-        LwjglApplicationConfiguration config =
+        LwjglApplicationConfiguration cfg =
             new LwjglApplicationConfiguration();
-        config.useGL20 = true;
-        new LwjglApplication(new RPG(), config);
+        cfg.title = "RPG";
+        cfg.useGL20 = true;
+        cfg.width = 800;
+        cfg.height = 480;
+        new LwjglApplication(new RPG(), cfg);
     }
 }
