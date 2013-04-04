@@ -86,7 +86,10 @@ public class RPG
 
     private OrthographicCamera camera;
     private SpriteBatch batch;
+
     private LevelTextures textures;
+    private TextureRegion[] playerTexture;
+    private TextureRegion[] badguyTexture;
 
     private ICharacter player;
 
@@ -96,8 +99,11 @@ public class RPG
         camera = new OrthographicCamera(SCREEN_WIDTH, SCREEN_HEIGHT);
         camera.position.set(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0);
 
-        batch = new SpriteBatch();
         textures = new LevelTextures("tiles0.png");
+        playerTexture = loadCharacter("player.png");
+        badguyTexture = loadCharacter("badguy.png");
+
+        batch = new SpriteBatch();
 
         try {
             player = Builder.build(123L);
@@ -122,10 +128,20 @@ public class RPG
                 TextureRegion tr = getTerrain(lvl, x, y);
 
                 if (tr != null) {
-//System.out.format("Level %s draw %d,%d at %d,%d\n", lvl.getName(), x, y, x * width, y * height);
                     batch.draw(tr, x * width, y * height);
                 }
             }
+        }
+
+        for (ICharacter ch : lvl.getCharacters()) {
+            TextureRegion tr;
+            if (ch.isPlayer()) {
+                tr = playerTexture[0];
+            } else {
+                tr = badguyTexture[0];
+            }
+
+            batch.draw(tr, ch.getX() * width, ch.getY() * height);
         }
     }
 
@@ -157,6 +173,22 @@ public class RPG
         default:
             return textures.getUnknown();
         }
+    }
+
+    private TextureRegion[] loadCharacter(String name)
+    {
+        Texture tileSheet = new Texture(Gdx.files.internal(name));
+        TextureRegion[][] region = TextureRegion.split(tileSheet, 16, 16);
+        if (region == null || region.length == 0) {
+            throw new Error("Failed to load " + name);
+        } else if (region.length != 1) {
+            final String msg = String.format("Expected 1x? from %s, not %dx%d",
+                                             name, region.length,
+                                             region[0].length);
+            throw new Error(msg);
+        }
+
+        return region[0];
     }
 
     @Override
