@@ -14,6 +14,12 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>org.glowacki.core</groupId>
+			<artifactId>core</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
 			<groupId>com.badlogic.gdx</groupId>
 			<artifactId>gdx</artifactId>
 			<version>${gdx.version}</version>
