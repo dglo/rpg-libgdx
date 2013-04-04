@@ -1,4 +1,4 @@
-package org.glowacki.rpg.java;
+package org.glowacki.rpg;
 
 import org.glowacki.rpg.core.RPG;
 
