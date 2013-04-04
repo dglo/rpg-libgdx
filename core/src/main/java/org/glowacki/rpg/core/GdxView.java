@@ -78,9 +78,6 @@ class LevelTextures
 
 public class GdxView
 {
-    private static final int SCREEN_WIDTH = 320;
-    private static final int SCREEN_HEIGHT = 480;
-
     private OrthographicCamera camera;
     private SpriteBatch batch;
 
@@ -90,14 +87,21 @@ public class GdxView
 
     GdxView()
     {
-        camera = new OrthographicCamera(SCREEN_WIDTH, SCREEN_HEIGHT);
-        camera.position.set(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0);
+        camera = new OrthographicCamera(Gdx.graphics.getWidth(),
+                                        Gdx.graphics.getHeight());
+        camera.position.set(Gdx.graphics.getWidth() * 0.5f,
+                            Gdx.graphics.getHeight() * 0.5f, 0);
 
         textures = new LevelTextures("tiles0.png");
         playerTexture = loadCharacter("player.png");
         badguyTexture = loadCharacter("badguy.png");
 
         batch = new SpriteBatch();
+        batch.getProjectionMatrix().setToOrtho2D(0f, 0f,
+                                                 Gdx.graphics.getWidth(),
+                                                 Gdx.graphics.getHeight());
+
+        camera.update();
     }
 
     private void drawLevel(Level lvl)
@@ -186,6 +190,6 @@ public class GdxView
 
     public void resize(int width, int height)
     {
-        System.out.format("Resize %dx%d is not implemented\n", width, height);
+        batch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
     }
 }
