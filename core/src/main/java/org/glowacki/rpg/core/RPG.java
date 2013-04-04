@@ -9,12 +9,14 @@ public class RPG
     implements ApplicationListener
 {
     private GdxView view;
+    private GdxControl control;
     private ICharacter player;
 
     @Override
     public void create()
     {
         view = new GdxView();
+        control = new GdxControl();
 
         try {
             player = Builder.build(123L);
@@ -38,6 +40,7 @@ public class RPG
     @Override
     public void render()
     {
+        control.update(player);
         view.render(player);
     }
 
