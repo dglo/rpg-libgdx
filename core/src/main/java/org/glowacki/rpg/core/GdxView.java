@@ -183,6 +183,9 @@ public class GdxView
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
+        // tell the camera to update its matrices.
+        camera.update();
+
         batch.begin();
         drawLevel(player.getLevel());
         batch.end();

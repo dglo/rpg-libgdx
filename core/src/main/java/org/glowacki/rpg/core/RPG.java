@@ -1,6 +1,7 @@
 package org.glowacki.rpg.core;
 
 import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Gdx;
 
 import org.glowacki.core.CoreException;
 import org.glowacki.core.ICharacter;
@@ -11,6 +12,8 @@ public class RPG
     private GdxView view;
     private GdxControl control;
     private ICharacter player;
+
+    private float time;
 
     @Override
     public void create()
@@ -40,7 +43,22 @@ public class RPG
     @Override
     public void render()
     {
-        control.update(player);
+        float delta = Math.min(0.06f, Gdx.graphics.getDeltaTime());
+
+        time += delta;
+        if (time < 0.1f) {
+            return;
+        }
+
+        time = 0;
+
+        if (control.update(player)) {
+            System.out.print("!");
+        } else {
+            System.out.print(".");
+        }
+        System.out.flush();
+
         view.render(player);
     }
 
