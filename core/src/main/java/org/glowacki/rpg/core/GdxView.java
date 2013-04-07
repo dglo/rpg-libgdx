@@ -14,15 +14,12 @@ import org.glowacki.core.Terrain;
 
 class LevelTextures
 {
-    private static final int TILE_WIDTH = 16;
-    private static final int TILE_HEIGHT = 16;
-
     private TextureRegion[][] tiles;
 
-    LevelTextures(String name)
+    LevelTextures(String name, int tileWidth, int tileHeight)
     {
         Texture tileSheet = new Texture(Gdx.files.internal(name));
-        tiles = TextureRegion.split(tileSheet, TILE_WIDTH, TILE_HEIGHT);
+        tiles = TextureRegion.split(tileSheet, tileWidth, tileHeight);
     }
 
     TextureRegion getDoor()
@@ -38,11 +35,6 @@ class LevelTextures
     TextureRegion getFloor()
     {
         return tiles[0][14];
-    }
-
-    int getTileHeight()
-    {
-        return TILE_HEIGHT;
     }
 
     TextureRegion getTunnel()
@@ -69,15 +61,13 @@ class LevelTextures
     {
         return tiles[0][3];
     }
-
-    int getTileWidth()
-    {
-        return TILE_WIDTH;
-    }
 }
 
 public class GdxView
 {
+    private int tileWidth;
+    private int tileHeight;
+
     private OrthographicCamera camera;
     private SpriteBatch batch;
 
@@ -85,14 +75,17 @@ public class GdxView
     private TextureRegion[] playerTexture;
     private TextureRegion[] badguyTexture;
 
-    GdxView()
+    GdxView(int tileWidth, int tileHeight)
     {
+        this.tileWidth = tileWidth;
+        this.tileHeight = tileHeight;
+
         camera = new OrthographicCamera(Gdx.graphics.getWidth(),
                                         Gdx.graphics.getHeight());
         camera.position.set(Gdx.graphics.getWidth() * 0.5f,
                             Gdx.graphics.getHeight() * 0.5f, 0);
 
-        textures = new LevelTextures("tiles0.png");
+        textures = new LevelTextures("tiles0.png", tileWidth, tileHeight);
         playerTexture = loadCharacter("player.png");
         badguyTexture = loadCharacter("badguy.png");
 
@@ -106,15 +99,16 @@ public class GdxView
 
     private void drawLevel(Level lvl)
     {
-        final int width = textures.getTileWidth();
-        final int height = textures.getTileHeight();
+        final int screenWidth = Gdx.graphics.getWidth();
+        final int screenHeight = Gdx.graphics.getHeight();
 
         for (int x = 0; x <= lvl.getMaxX(); x++) {
             for (int y = 0; y <= lvl.getMaxY(); y++) {
                 TextureRegion tr = getTerrain(lvl, x, y);
 
                 if (tr != null) {
-                    batch.draw(tr, x * width, y * height);
+                    batch.draw(tr, x * tileWidth,
+                               screenHeight - ((y + 1) * tileHeight));
                 }
             }
         }
@@ -127,7 +121,8 @@ public class GdxView
                 tr = badguyTexture[0];
             }
 
-            batch.draw(tr, ch.getX() * width, ch.getY() * height);
+            batch.draw(tr, ch.getX() * tileWidth,
+                       screenHeight - ((ch.getY() + 1) * tileHeight));
         }
     }
 

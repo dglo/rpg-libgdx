@@ -7,6 +7,40 @@ import com.badlogic.gdx.InputProcessor;
 import org.glowacki.core.CoreException;
 import org.glowacki.core.Direction;
 import org.glowacki.core.ICharacter;
+import org.glowacki.core.MapPoint;
+
+class MyPoint
+    implements MapPoint
+{
+    private int x;
+    private int y;
+
+    MyPoint(int x, int y)
+    {
+        this.x = x;
+        this.y = y;
+    }
+
+    /**
+     * Get this point's X coordinate.
+     *
+     * @return X coordinate
+     */
+    public int getX()
+    {
+        return x;
+    }
+
+    /**
+     * Get this point's Y coordinate.
+     *
+     * @return Y coordinate
+     */
+    public int getY()
+    {
+        return y;
+    }
+}
 
 /**
  * An InputProcessor is used to receive input events from the keyboard and the
@@ -193,10 +227,16 @@ class Input
 
 public class GdxControl
 {
+    private int tileWidth;
+    private int tileHeight;
+
     private Input input;
 
-    public GdxControl()
+    public GdxControl(int tileWidth, int tileHeight)
     {
+        this.tileWidth = tileWidth;
+        this.tileHeight = tileHeight;
+
         input = new Input();
         Gdx.input.setInputProcessor(input);
     }
@@ -205,12 +245,34 @@ public class GdxControl
     {
         InputAction action = input.getAction();
         if (action == null) {
+            if (player.hasPath()) {
+                try {
+                    int rtnval = player.movePath();
+                    return true;
+                } catch (CoreException ce) {
+                    ce.printStackTrace();
+                }
+            }
+
             return false;
         }
 
         if (action.useCoord) {
-            System.out.format("Plot path to %d,%d\n", action.x, action.y);
-            return false;
+            final int screenWidth = Gdx.graphics.getWidth();
+            final int screenHeight = Gdx.graphics.getHeight();
+
+            final int mapX = action.x / tileWidth;
+            final int mapY = action.y / tileHeight;
+
+            try {
+                player.buildPath(new MyPoint(mapX, mapY));
+                int rtnval = player.movePath();
+            } catch (CoreException ce) {
+                ce.printStackTrace();
+                return false;
+           }
+
+            return true;
         }
 
         Direction dir;
@@ -245,6 +307,7 @@ System.out.format("Ignore #%c\n", action.key);
         if (dir != Direction.UNKNOWN) {
             try {
                 player.move(dir);
+                player.clearPath();
                 return true;
             } catch (CoreException ce) {
                 // XXX

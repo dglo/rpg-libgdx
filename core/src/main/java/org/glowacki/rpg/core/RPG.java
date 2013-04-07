@@ -9,6 +9,9 @@ import org.glowacki.core.ICharacter;
 public class RPG
     implements ApplicationListener
 {
+    private static final int TILE_WIDTH = 16;
+    private static final int TILE_HEIGHT = 16;
+
     private GdxView view;
     private GdxControl control;
     private ICharacter player;
@@ -18,8 +21,8 @@ public class RPG
     @Override
     public void create()
     {
-        view = new GdxView();
-        control = new GdxControl();
+        view = new GdxView(TILE_WIDTH, TILE_HEIGHT);
+        control = new GdxControl(TILE_WIDTH, TILE_HEIGHT);
 
         try {
             player = Builder.build(123L);
