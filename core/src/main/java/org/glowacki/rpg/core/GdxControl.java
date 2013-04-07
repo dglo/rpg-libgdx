@@ -102,20 +102,19 @@ class Input
      */
     public synchronized boolean keyUp(int keycode)
     {
-/*
-        if (keycode == Keys.SHIFT_LEFT || keycode == Keys.SHIFT_RIGHT) {
-            shiftPressed = false;
+        if (keycode == Keys.LEFT) {
+            lastKey = 'h';
+        } else if (keycode == Keys.RIGHT) {
+            lastKey = 'l';
+        } else if (keycode == Keys.DOWN) {
+            lastKey = 'j';
+        } else if (keycode == Keys.UP) {
+            lastKey = 'k';
         } else {
-            clear();
-
-            lastKey = keycode;
-            thisKey = Keys.UNKNOWN;
-            useTouch = false;
+            return false;
         }
 
         return true;
-*/
-        return false;
     }
 
     /**
@@ -215,15 +214,15 @@ public class GdxControl
         }
 
         Direction dir;
-        if (/*action.key == Keys.LEFT || */action.key == 'h') {
+        if (action.key == 'h') {
             dir = Direction.LEFT;
-        } else if (/*action.key == Keys.RIGHT || */action.key == 'i') {
+        } else if (action.key == 'i') {
             dir = Direction.RIGHT_UP;
-        } else if (/*action.key == Keys.DOWN || */action.key == 'j') {
+        } else if (action.key == 'j') {
             dir = Direction.DOWN;
-        } else if (/*action.key == Keys.UP || */action.key == 'k') {
+        } else if (action.key == 'k') {
             dir = Direction.UP;
-        } else if (/*action.key == Keys.RIGHT || */action.key == 'l') {
+        } else if (action.key == 'l') {
             dir = Direction.RIGHT;
         } else if (action.key == 'm') {
             dir = Direction.RIGHT_DOWN;
