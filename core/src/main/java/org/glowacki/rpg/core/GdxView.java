@@ -24,22 +24,27 @@ class LevelTextures
 
     TextureRegion getDoor()
     {
-        return tiles[0][5];
+        return tiles[0][4];
     }
 
     TextureRegion getDownstairs()
     {
-        return tiles[0][8];
+        return tiles[0][6];
     }
 
     TextureRegion getFloor()
     {
-        return tiles[0][14];
+        return tiles[0][1];
+    }
+
+    TextureRegion getGreyedOut()
+    {
+        return tiles[0][8];
     }
 
     TextureRegion getTunnel()
     {
-        return tiles[0][1];
+        return tiles[0][2];
     }
 
     TextureRegion getUnknown()
@@ -49,17 +54,17 @@ class LevelTextures
 
     TextureRegion getUpstairs()
     {
-        return tiles[0][7];
+        return tiles[0][5];
     }
 
     TextureRegion getWall()
     {
-        return tiles[0][4];
+        return tiles[0][3];
     }
 
     TextureRegion getWater()
     {
-        return tiles[0][3];
+        return tiles[0][7];
     }
 }
 
