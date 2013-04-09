@@ -11,6 +11,7 @@ import org.glowacki.core.CoreException;
 import org.glowacki.core.ICharacter;
 import org.glowacki.core.Level;
 import org.glowacki.core.Terrain;
+import org.glowacki.core.VisibleMap;
 
 class LevelTextures
 {
@@ -80,6 +81,9 @@ public class GdxView
     private TextureRegion[] playerTexture;
     private TextureRegion[] badguyTexture;
 
+    private Level seenLevel;
+    private boolean[][] seen;
+
     GdxView(int tileWidth, int tileHeight)
     {
         this.tileWidth = tileWidth;
@@ -102,23 +106,66 @@ public class GdxView
         camera.update();
     }
 
-    private void drawLevel(Level lvl)
+    private void drawLevel(ICharacter player)
     {
         final int screenWidth = Gdx.graphics.getWidth();
         final int screenHeight = Gdx.graphics.getHeight();
 
-        for (int x = 0; x <= lvl.getMaxX(); x++) {
-            for (int y = 0; y <= lvl.getMaxY(); y++) {
-                TextureRegion tr = getTerrain(lvl, x, y);
+        final Level level = player.getLevel();
 
-                if (tr != null) {
-                    batch.draw(tr, x * tileWidth,
-                               screenHeight - ((y + 1) * tileHeight));
+        if (seenLevel == null || seenLevel != level) {
+            seen = player.getSeenArray();
+            seenLevel = level;
+        }
+
+        final int DISTANCE = 7;
+
+        VisibleMap vmap = new VisibleMap(level.getMap(), true);
+        boolean[][] visible = vmap.getVisible(player.getX(), player.getY(),
+                                              DISTANCE);
+
+        for (int x = 0; x <= level.getMaxX(); x++) {
+            for (int y = 0; y <= level.getMaxY(); y++) {
+                Terrain terrain;
+                try {
+                    terrain = level.getTerrain(x, y);
+                } catch (CoreException ce) {
+                    ce.printStackTrace();
+                    terrain = Terrain.UNKNOWN;
+                }
+
+                final int realX = x * tileWidth;
+                final int realY = screenHeight - ((y + 1) * tileHeight);
+
+                TextureRegion tr = getTerrainTexture(terrain);
+                batch.draw(tr, realX, realY);
+
+                TextureRegion overlay;
+                if (visible[x][y]) {
+                    if (!seen[x][y]) {
+                        seen[x][y] = true;
+                    }
+
+                    overlay = null;
+                } else if (terrain == Terrain.UNKNOWN) {
+                    overlay = null;
+                } else if (seen[x][y]) {
+                    overlay = textures.getGreyedOut();
+                } else {
+                    overlay = textures.getUnknown();
+                }
+
+                if (overlay != null) {
+                    batch.draw(overlay, realX, realY);
                 }
             }
         }
 
-        for (ICharacter ch : lvl.getCharacters()) {
+        for (ICharacter ch : level.getCharacters()) {
+            if (!visible[ch.getX()][ch.getY()]) {
+                continue;
+            }
+
             TextureRegion tr;
             if (ch.isPlayer()) {
                 tr = playerTexture[0];
@@ -130,17 +177,8 @@ public class GdxView
                        screenHeight - ((ch.getY() + 1) * tileHeight));
         }
     }
-
-    private TextureRegion getTerrain(Level level, int x, int y)
+    private TextureRegion getTerrainTexture(Terrain terrain)
     {
-        Terrain terrain;
-        try {
-            terrain = level.getTerrain(x, y);
-        } catch (CoreException ce) {
-            ce.printStackTrace();
-            return textures.getUnknown();
-        }
-
         switch (terrain) {
         case DOOR:
             return textures.getDoor();
@@ -187,7 +225,7 @@ public class GdxView
         camera.update();
 
         batch.begin();
-        drawLevel(player.getLevel());
+        drawLevel(player);
         batch.end();
     }
 
