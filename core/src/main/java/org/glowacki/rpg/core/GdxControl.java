@@ -276,29 +276,29 @@ public class GdxControl
         }
 
         Direction dir;
-        if (action.key == 'h') {
+        if (action.key == 'b') {
+            dir = Direction.LEFT_DOWN;
+        } else if (action.key == 'h') {
             dir = Direction.LEFT;
-        } else if (action.key == 'i') {
-            dir = Direction.RIGHT_UP;
         } else if (action.key == 'j') {
             dir = Direction.DOWN;
         } else if (action.key == 'k') {
             dir = Direction.UP;
         } else if (action.key == 'l') {
             dir = Direction.RIGHT;
-        } else if (action.key == 'm') {
-            dir = Direction.RIGHT_DOWN;
         } else if (action.key == 'n') {
-            dir = Direction.LEFT_DOWN;
+            dir = Direction.RIGHT_DOWN;
         } else if (action.key == 'u') {
+            dir = Direction.RIGHT_UP;
+        } else if (action.key == 'y') {
             dir = Direction.LEFT_UP;
         } else if (action.key == '<') {
             dir = Direction.CLIMB;
         } else if (action.key == '>') {
             dir = Direction.DESCEND;
         } else if (action.key == 'q') {
+            Gdx.app.exit();
             dir = Direction.UNKNOWN;
-System.out.println("QUIT ignored");
         } else {
 System.out.format("Ignore #%c\n", action.key);
             dir = Direction.UNKNOWN;
