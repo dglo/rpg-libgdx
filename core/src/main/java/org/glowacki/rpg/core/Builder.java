@@ -74,7 +74,7 @@ public abstract class Builder
 
         l2.addNextLevel(l3);
 
-        PlayerCharacter ch = new PlayerCharacter("me", 10, 10, 10);
+        PlayerCharacter ch = new PlayerCharacter("me", 10, 10, 10, 10);
         lvl.enterDown(ch);
 
         return ch;
@@ -84,7 +84,7 @@ public abstract class Builder
         throws CoreException
     {
         for (int i = 0; i < max; i++) {
-            ComputerCharacter ch = new ComputerCharacter(6, 6, 6,
+            ComputerCharacter ch = new ComputerCharacter(6, 6, 6, 6,
                                                          random.nextLong());
             ch.setLevel(lvl);
         }

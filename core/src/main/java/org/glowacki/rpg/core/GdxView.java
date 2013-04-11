@@ -118,11 +118,9 @@ public class GdxView
             seenLevel = level;
         }
 
-        final int DISTANCE = 7;
-
         VisibleMap vmap = new VisibleMap(level.getMap());
         boolean[][] visible = vmap.getVisible(player.getX(), player.getY(),
-                                              DISTANCE);
+                                              player.getSightDistance());
 
         for (int x = 0; x <= level.getMaxX(); x++) {
             for (int y = 0; y <= level.getMaxY(); y++) {
