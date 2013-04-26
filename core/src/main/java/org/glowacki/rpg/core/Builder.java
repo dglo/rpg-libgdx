@@ -8,6 +8,9 @@ import org.glowacki.core.ICharacter;
 import org.glowacki.core.Level;
 import org.glowacki.core.Map;
 import org.glowacki.core.PlayerCharacter;
+import org.glowacki.core.dungen.Room;
+import org.glowacki.core.dungen.RoomGenerator2;
+import org.glowacki.core.dungen.Tunneler;
 
 public abstract class Builder
 {
@@ -61,21 +64,40 @@ public abstract class Builder
     {
         Random random = new Random(seed);
 
-        Level lvl = new Level("Top", new Map(LEVEL_1));
-        populate(lvl, random, 2);
+        final int maxWidth = 35;
+        final int maxHeight = 35;
+        final int gridWidth = 3;
+        final int gridHeight = 3;
 
-        Level l2 = new Level("Middle", new Map(LEVEL_2));
-        populate(l2, random, 3);
+        final int maxLevels = 5;
+        final int maxConnections = 4;
 
-        lvl.addNextLevel(l2);
+        Level topLvl = null;
+        Level prev = null;
 
-        Level l3 = new Level("Bottom", new Map(LEVEL_3));
-        populate(l3, random, 4);
+        for (int i = 0; i < maxLevels; i++) {
+            Room[] rooms =
+                RoomGenerator2.createRooms(random, maxWidth, maxHeight,
+                                           gridWidth, gridHeight);
+            RoomGenerator2.addStairs(rooms, random, true, true);
 
-        l2.addNextLevel(l3);
+            Tunneler tunneler = new Tunneler(rooms, maxConnections, random);
+
+            String[] strMap = tunneler.dig(maxWidth, maxHeight);
+            Level lvl = new Level("L" + i, new Map(strMap));
+
+            //populate(lvl, random, 2);
+
+            if (prev == null) {
+                topLvl = lvl;
+            } else {
+                prev.addNextLevel(lvl);
+            }
+            prev = lvl;
+        }
 
         PlayerCharacter ch = new PlayerCharacter("me", 10, 10, 10, 10);
-        lvl.enterDown(ch);
+        topLvl.enterDown(ch);
 
         return ch;
     }
