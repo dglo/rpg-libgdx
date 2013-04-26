@@ -6,100 +6,87 @@ import org.glowacki.core.ComputerCharacter;
 import org.glowacki.core.CoreException;
 import org.glowacki.core.ICharacter;
 import org.glowacki.core.Level;
+import org.glowacki.core.LevelException;
 import org.glowacki.core.Map;
+import org.glowacki.core.MapException;
 import org.glowacki.core.PlayerCharacter;
 import org.glowacki.core.dungen.Room;
 import org.glowacki.core.dungen.RoomGenerator2;
 import org.glowacki.core.dungen.Tunneler;
 
+class DynamicLevel
+    extends Level
+{
+    private Random random;
+    private int level;
+
+    DynamicLevel(Random random, int level, Map map)
+    {
+        super("L" + level, map);
+
+        this.random = random;
+    }
+
+    public Level getNextLevel()
+    {
+        if (super.getNextLevel() == null) {
+            try {
+                addNextLevel(Builder.createLevel(random, level + 1));
+            } catch (LevelException le) {
+                throw new Error("Cannot add level " + (level + 1), le);
+            }
+        }
+
+        return super.getNextLevel();
+    }
+}
+
 public abstract class Builder
 {
-    private static final String[] LEVEL_1 = new String[] {
-        "           ---------",
-        "           |.......|",
-        "           |.......|",
-        "           |.......|",
-        "           ---+-----",
-        "              #",
-        "              #",
-        "              ###",
-        "                #",
-        "------          #",
-        "|....|          #       ----------",
-        "|....+#######   #       |.....>..|",
-        "|.<..|      ############+........|",
-        "|....|                  |........|",
-        "------                  ----------",
-    };
+    private static final int maxWidth = 35;
+    private static final int maxHeight = 35;
+    private static final int gridWidth = 3;
+    private static final int gridHeight = 3;
 
-    private static final String[] LEVEL_2 = new String[] {
-        "----------------------------",
-        "|.....................>....|",
-        "|..........................|     -----",
-        "|..........................|     |...|",
-        "|..........................+#####+.<.|",
-        "|..........................|     |...|",
-        "|..........................|     -----",
-        "----------------------------",
-    };
-
-    private static final String[] LEVEL_3 = new String[] {
-        "-----",
-        "|...|",
-        "|...----",
-        "|......|",
-        "|..<...|",
-        "|......--------",
-        "|.............|",
-        "-----.........|",
-        "    |.........|",
-        "    -----.....|",
-        "        |.....|",
-        "        |.....|",
-        "        -------",
-    };
+    private static final int maxLevels = 5;
+    private static final int maxConnections = 4;
 
     public static ICharacter build(long seed)
         throws CoreException
     {
         Random random = new Random(seed);
 
-        final int maxWidth = 35;
-        final int maxHeight = 35;
-        final int gridWidth = 3;
-        final int gridHeight = 3;
-
-        final int maxLevels = 5;
-        final int maxConnections = 4;
-
-        Level topLvl = null;
-        Level prev = null;
-
-        for (int i = 0; i < maxLevels; i++) {
-            Room[] rooms =
-                RoomGenerator2.createRooms(random, maxWidth, maxHeight,
-                                           gridWidth, gridHeight);
-            RoomGenerator2.addStairs(rooms, random, true, true);
-
-            Tunneler tunneler = new Tunneler(rooms, maxConnections, random);
-
-            String[] strMap = tunneler.dig(maxWidth, maxHeight);
-            Level lvl = new Level("L" + i, new Map(strMap));
-
-            //populate(lvl, random, 2);
-
-            if (prev == null) {
-                topLvl = lvl;
-            } else {
-                prev.addNextLevel(lvl);
-            }
-            prev = lvl;
-        }
-
         PlayerCharacter ch = new PlayerCharacter("me", 10, 10, 10, 10);
+
+        Level topLvl = createLevel(random, 1);
         topLvl.enterDown(ch);
 
         return ch;
+    }
+
+    static Level createLevel(Random random, int num)
+    {
+        Room[] rooms =
+            RoomGenerator2.createRooms(random, maxWidth, maxHeight,
+                                       gridWidth, gridHeight);
+        RoomGenerator2.addStairs(rooms, random, true, true);
+
+        Tunneler tunneler = new Tunneler(rooms, maxConnections, random);
+
+        String[] strMap = tunneler.dig(maxWidth, maxHeight);
+
+        Map map;
+        try {
+            map = new Map(strMap);
+        } catch (MapException me) {
+            throw new Error("Created bad map " + strMap, me);
+        }
+
+        DynamicLevel lvl = new DynamicLevel(random, num, map);
+
+        //populate(lvl, random, 2);
+
+        return lvl;
     }
 
     private static void populate(Level lvl, Random random, int max)
