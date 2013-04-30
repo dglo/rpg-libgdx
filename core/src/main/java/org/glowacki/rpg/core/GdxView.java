@@ -174,6 +174,7 @@ public class GdxView
                        screenHeight - ((ch.getY() + 1) * tileHeight));
         }
     }
+
     private TextureRegion getTerrainTexture(Terrain terrain)
     {
         switch (terrain) {
@@ -218,12 +219,15 @@ public class GdxView
         Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
-        // tell the camera to update its matrices.
-        camera.update();
+        batch.setProjectionMatrix(camera.combined);
 
+        // draw everything
         batch.begin();
         drawLevel(player);
         batch.end();
+
+        // tell the camera to update its matrices.
+        camera.update();
     }
 
     public void resize(int width, int height)
