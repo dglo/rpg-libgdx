@@ -89,19 +89,18 @@ public class GdxView
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
 
-        camera = new OrthographicCamera(Gdx.graphics.getWidth(),
-                                        Gdx.graphics.getHeight());
-        camera.position.set(Gdx.graphics.getWidth() * 0.5f,
-                            Gdx.graphics.getHeight() * 0.5f, 0);
+        final int width = Gdx.graphics.getWidth();
+        final int height = Gdx.graphics.getHeight();
+
+        camera = new OrthographicCamera(width, height);
+        camera.position.set(width * 0.5f, height * 0.5f, 0);
 
         textures = new LevelTextures("tiles0.png", tileWidth, tileHeight);
         playerTexture = loadCharacter("player.png");
         badguyTexture = loadCharacter("badguy.png");
 
         batch = new SpriteBatch();
-        batch.getProjectionMatrix().setToOrtho2D(0f, 0f,
-                                                 Gdx.graphics.getWidth(),
-                                                 Gdx.graphics.getHeight());
+        batch.getProjectionMatrix().setToOrtho2D(0f, 0f, width, height);
 
         camera.update();
     }
