@@ -260,8 +260,6 @@ public class GdxControl
             final int mapY =
                 1 + (int) (player.getY() - (moveY / (float) tileHeight));
 
-System.out.format("Player %d,%d:  Move %.2f,%.2f -> map %d,%d\n",player.getX(),player.getY(),moveX,moveY,mapX,mapY);
-//if(true)return false;
             try {
                 player.buildPath(new MyPoint((int) mapX, (int) mapY));
                 int rtnval = player.movePath();
