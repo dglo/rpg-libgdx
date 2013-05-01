@@ -84,6 +84,10 @@ public class GdxView
     private Level seenLevel;
     private boolean[][] seen;
 
+    private float centerX = Float.MIN_VALUE;
+    private float centerY = Float.MIN_VALUE;
+    private float speed = 120;
+
     GdxView(int tileWidth, int tileHeight)
     {
         this.tileWidth = tileWidth;
@@ -103,6 +107,21 @@ public class GdxView
         batch.getProjectionMatrix().setToOrtho2D(0f, 0f, width, height);
 
         camera.update();
+    }
+
+    private float computePosition(float oldPos, float newPos, float dv)
+    {
+        if (Math.abs(newPos - oldPos) > 1) {
+            if (oldPos < newPos) {
+                return oldPos + dv;
+            }
+
+            if (oldPos > newPos) {
+                return oldPos - dv;
+            }
+        }
+
+        return newPos;
     }
 
     private void drawLevel(ICharacter player)
@@ -163,16 +182,47 @@ public class GdxView
                 continue;
             }
 
-            TextureRegion tr;
-            if (ch.isPlayer()) {
-                tr = playerTexture[0];
-            } else {
-                tr = badguyTexture[0];
+            if (ch == player) {
+                continue;
             }
 
+            TextureRegion tr = badguyTexture[0];
             batch.draw(tr, ch.getX() * tileWidth,
                        screenHeight - ((ch.getY() + 1) * tileHeight));
         }
+
+        final int targetX = player.getX() * tileWidth;
+        final int targetY = screenHeight - ((player.getY() + 1) * tileHeight);
+
+        if (centerX == Float.MIN_VALUE || centerY == Float.MIN_VALUE) {
+            centerX = targetX;
+            centerY = targetY;
+        } else if (targetX != (int) centerX || targetY != (int) centerY) {
+            final float dv = Gdx.graphics.getDeltaTime() * speed;
+
+            centerX = computePosition(centerX, (float) targetX, dv);
+            centerY = computePosition(centerY, (float) targetY, dv);
+        } else if (player.hasPath()) {
+            try {
+                int rtnval = player.movePath();
+System.out.format("MovePath %d -> %d,%d \n",rtnval,player.getX(),player.getY());
+            } catch (CoreException ce) {
+                ce.printStackTrace();
+            }
+
+            final float dv = Gdx.graphics.getDeltaTime() * speed;
+
+            final float nextX = player.getX() * tileWidth;
+            final float nextY =
+                screenHeight - ((player.getY() + 1) * tileHeight);
+
+            centerX = computePosition(centerX, nextX, dv);
+            centerY = computePosition(centerY, nextY, dv);
+        }
+
+        batch.draw(playerTexture[0], centerX, centerY);
+
+        camera.position.set(centerX, centerY, 0);
     }
 
     private TextureRegion getTerrainTexture(Terrain terrain)

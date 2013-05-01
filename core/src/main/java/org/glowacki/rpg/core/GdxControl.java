@@ -245,15 +245,6 @@ public class GdxControl
     {
         InputAction action = input.getAction();
         if (action == null) {
-            if (player.hasPath()) {
-                try {
-                    int rtnval = player.movePath();
-                    return true;
-                } catch (CoreException ce) {
-                    ce.printStackTrace();
-                }
-            }
-
             return false;
         }
 
@@ -261,11 +252,18 @@ public class GdxControl
             final int screenWidth = Gdx.graphics.getWidth();
             final int screenHeight = Gdx.graphics.getHeight();
 
-            final int mapX = action.x / tileWidth;
-            final int mapY = action.y / tileHeight;
+            final float moveX = action.x - ((float) screenWidth / 2.0f);
+            final float moveY = ((float) screenHeight / 2.0f) - action.y;
 
+            final int mapX =
+                (int) (player.getX() + (moveX / (float) tileWidth));
+            final int mapY =
+                1 + (int) (player.getY() - (moveY / (float) tileHeight));
+
+System.out.format("Player %d,%d:  Move %.2f,%.2f -> map %d,%d\n",player.getX(),player.getY(),moveX,moveY,mapX,mapY);
+//if(true)return false;
             try {
-                player.buildPath(new MyPoint(mapX, mapY));
+                player.buildPath(new MyPoint((int) mapX, (int) mapY));
                 int rtnval = player.movePath();
             } catch (CoreException ce) {
                 ce.printStackTrace();
