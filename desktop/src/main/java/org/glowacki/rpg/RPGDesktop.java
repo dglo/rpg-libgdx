@@ -9,12 +9,15 @@ public class RPGDesktop
 {
     public static void main(String[] args)
     {
+        RPG rpg = new RPG();
+        rpg.processArgs(args);
+
         LwjglApplicationConfiguration cfg =
             new LwjglApplicationConfiguration();
         cfg.title = "RPG";
         cfg.useGL20 = true;
         cfg.width = 800;
         cfg.height = 480;
-        new LwjglApplication(new RPG(), cfg);
+        new LwjglApplication(rpg, cfg);
     }
 }

@@ -3,4 +3,4 @@
 PKG=rpg
 
 mvn3 -Pdesktop clean package &&
-java -jar desktop/target/$PKG-desktop-0.1-SNAPSHOT-jar-with-dependencies.jar
+java -jar desktop/target/$PKG-desktop-0.1-SNAPSHOT-jar-with-dependencies.jar $*

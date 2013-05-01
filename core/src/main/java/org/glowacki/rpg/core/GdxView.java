@@ -86,7 +86,7 @@ public class GdxView
 
     private float centerX = Float.MIN_VALUE;
     private float centerY = Float.MIN_VALUE;
-    private float speed = 120;
+    private float speed;
 
     GdxView(int tileWidth, int tileHeight)
     {
@@ -283,5 +283,10 @@ System.out.format("MovePath %d -> %d,%d \n",rtnval,player.getX(),player.getY());
     public void resize(int width, int height)
     {
         batch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
+    }
+
+    public void setSpeed(float speed)
+    {
+        this.speed = speed;
     }
 }
