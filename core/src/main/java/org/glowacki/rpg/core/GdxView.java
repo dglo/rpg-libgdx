@@ -81,11 +81,12 @@ public class GdxView
     private TextureRegion[] playerTexture;
     private TextureRegion[] badguyTexture;
 
+    private VisibleMap vmap;
     private Level seenLevel;
     private boolean[][] seen;
 
-    private float centerX = Float.MIN_VALUE;
-    private float centerY = Float.MIN_VALUE;
+    private float centerX;
+    private float centerY;
     private float speed;
 
     GdxView(int tileWidth, int tileHeight)
@@ -131,12 +132,13 @@ public class GdxView
 
         final Level level = player.getLevel();
 
-        if (seenLevel == null || seenLevel != level) {
+        boolean newLevel = (seenLevel == null || seenLevel != level);
+        if (newLevel) {
             seen = player.getSeenArray();
             seenLevel = level;
+            vmap = new VisibleMap(level.getMap());
         }
 
-        VisibleMap vmap = new VisibleMap(level.getMap());
         boolean[][] visible = vmap.getVisible(player.getX(), player.getY(),
                                               player.getSightDistance());
 
@@ -194,7 +196,7 @@ public class GdxView
         final int targetX = player.getX() * tileWidth;
         final int targetY = screenHeight - ((player.getY() + 1) * tileHeight);
 
-        if (centerX == Float.MIN_VALUE || centerY == Float.MIN_VALUE) {
+        if (newLevel) {
             centerX = targetX;
             centerY = targetY;
         } else if (targetX != (int) centerX || targetY != (int) centerY) {
