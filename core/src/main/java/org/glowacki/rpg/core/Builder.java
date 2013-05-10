@@ -10,6 +10,7 @@ import org.glowacki.core.LevelException;
 import org.glowacki.core.Map;
 import org.glowacki.core.MapException;
 import org.glowacki.core.PlayerCharacter;
+import org.glowacki.core.dungen.GeneratorException;
 import org.glowacki.core.dungen.Room;
 import org.glowacki.core.dungen.RoomGenerator2;
 import org.glowacki.core.dungen.Tunneler;
@@ -34,6 +35,8 @@ class DynamicLevel
                 addNextLevel(Builder.createLevel(random, level + 1));
             } catch (LevelException le) {
                 throw new Error("Cannot add level " + (level + 1), le);
+            } catch (GeneratorException ge) {
+                throw new Error("Cannot add level " + (level + 1), ge);
             }
         }
 
@@ -65,15 +68,16 @@ public abstract class Builder
     }
 
     static Level createLevel(Random random, int num)
+        throws GeneratorException
     {
         Room[] rooms =
             RoomGenerator2.createRooms(random, maxWidth, maxHeight,
                                        gridWidth, gridHeight);
         RoomGenerator2.addStairs(rooms, random, true, true);
 
-        Tunneler tunneler = new Tunneler(rooms, maxConnections, random);
+        Tunneler tunneler = new Tunneler(rooms, maxConnections);
 
-        String[] strMap = tunneler.dig(maxWidth, maxHeight);
+        String[] strMap = tunneler.dig(maxWidth, maxHeight, random);
 
         Map map;
         try {

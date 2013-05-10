@@ -7,10 +7,10 @@ import com.badlogic.gdx.InputProcessor;
 import org.glowacki.core.CoreException;
 import org.glowacki.core.Direction;
 import org.glowacki.core.ICharacter;
-import org.glowacki.core.MapPoint;
+import org.glowacki.core.IMapPoint;
 
 class MyPoint
-    implements MapPoint
+    implements IMapPoint
 {
     private int x;
     private int y;
