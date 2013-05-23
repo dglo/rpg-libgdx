@@ -260,12 +260,29 @@ public class GdxControl
             final int mapY =
                 1 + (int) (player.getY() - (moveY / (float) tileHeight));
 
-            try {
-                player.buildPath(new MyPoint((int) mapX, (int) mapY));
-                int rtnval = player.movePath();
-            } catch (CoreException ce) {
-                ce.printStackTrace();
+            if (mapX == player.getX() && mapY == player.getY()) {
+                // clicked on current position
+                if (player.onStaircase()) {
+                    try {
+                        int numTurns = player.useStaircase();
+                    } catch (CoreException ce) {
+                        ce.printStackTrace();
+                        return false;
+                    }
+
+                    player.clearPath();
+                    return true;
+                }
+
                 return false;
+            } else {
+                try {
+                    player.buildPath(new MyPoint((int) mapX, (int) mapY));
+                    int numTurns = player.movePath();
+                } catch (CoreException ce) {
+                    ce.printStackTrace();
+                    return false;
+                }
            }
 
             return true;
@@ -302,7 +319,7 @@ System.out.format("Ignore #%c\n", action.key);
 
         if (dir != Direction.UNKNOWN) {
             try {
-                player.move(dir);
+                int numTurns = player.move(dir);
                 player.clearPath();
                 return true;
             } catch (CoreException ce) {
