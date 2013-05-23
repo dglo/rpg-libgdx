@@ -7,11 +7,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import java.util.HashMap;
+
 import org.glowacki.core.CoreException;
 import org.glowacki.core.ICharacter;
-import org.glowacki.core.Level;
+import org.glowacki.core.ILevel;
 import org.glowacki.core.Terrain;
-import org.glowacki.core.VisibleMap;
+import org.glowacki.rpg.event.CreateEvent;
+import org.glowacki.rpg.event.CreateMonsterEvent;
+import org.glowacki.rpg.event.CreatePlayerEvent;
+import org.glowacki.rpg.event.CreateListener;
 
 class LevelTextures
 {
@@ -70,6 +75,7 @@ class LevelTextures
 }
 
 public class GdxView
+    implements CreateListener
 {
     private int tileWidth;
     private int tileHeight;
@@ -81,13 +87,10 @@ public class GdxView
     private TextureRegion[] playerTexture;
     private TextureRegion[] badguyTexture;
 
-    private VisibleMap vmap;
-    private Level seenLevel;
-    private boolean[][] seen;
-
-    private float centerX;
-    private float centerY;
     private float speed;
+
+    private HashMap<Integer, ViewCharacter> characters =
+        new HashMap<Integer, ViewCharacter>();
 
     GdxView(int tileWidth, int tileHeight)
     {
@@ -110,37 +113,23 @@ public class GdxView
         camera.update();
     }
 
-    private float computePosition(float oldPos, float newPos, float dv)
-    {
-        if (Math.abs(newPos - oldPos) > 1) {
-            if (oldPos < newPos) {
-                return oldPos + dv;
-            }
-
-            if (oldPos > newPos) {
-                return oldPos - dv;
-            }
-        }
-
-        return newPos;
-    }
-
-    private void drawLevel(ICharacter player)
+    private void drawLevel(ICharacter ichar)
     {
         final int screenWidth = Gdx.graphics.getWidth();
         final int screenHeight = Gdx.graphics.getHeight();
 
-        final Level level = player.getLevel();
-
-        boolean newLevel = (seenLevel == null || seenLevel != level);
-        if (newLevel) {
-            seen = player.getSeenArray();
-            seenLevel = level;
-            vmap = new VisibleMap(level.getMap());
+        if (!characters.containsKey(ichar.getId())) {
+            throw new Error("ViewCharacter missing for " + ichar);
         }
 
-        boolean[][] visible = vmap.getVisible(player.getX(), player.getY(),
-                                              player.getSightDistance());
+        ViewCharacter player = characters.get(ichar.getId());
+
+        final ILevel level = player.getLevel();
+
+        boolean[][] seen = player.getSeen();
+
+        // XXX should only recalculate this when something moves
+        boolean[][] visible = player.getVisible();
 
         for (int x = 0; x <= level.getMaxX(); x++) {
             for (int y = 0; y <= level.getMaxY(); y++) {
@@ -184,7 +173,7 @@ public class GdxView
                 continue;
             }
 
-            if (ch == player) {
+            if (ch.getId() == player.getId()) {
                 continue;
             }
 
@@ -193,38 +182,11 @@ public class GdxView
                        screenHeight - ((ch.getY() + 1) * tileHeight));
         }
 
-        final int targetX = player.getX() * tileWidth;
-        final int targetY = screenHeight - ((player.getY() + 1) * tileHeight);
+        player.move();
 
-        if (newLevel) {
-            centerX = targetX;
-            centerY = targetY;
-        } else if (targetX != (int) centerX || targetY != (int) centerY) {
-            final float dv = Gdx.graphics.getDeltaTime() * speed;
+        batch.draw(playerTexture[0], player.getRealX(), player.getRealY());
 
-            centerX = computePosition(centerX, (float) targetX, dv);
-            centerY = computePosition(centerY, (float) targetY, dv);
-        } else if (player.hasPath()) {
-            try {
-                int rtnval = player.movePath();
-System.out.format("MovePath %d -> %d,%d \n",rtnval,player.getX(),player.getY());
-            } catch (CoreException ce) {
-                ce.printStackTrace();
-            }
-
-            final float dv = Gdx.graphics.getDeltaTime() * speed;
-
-            final float nextX = player.getX() * tileWidth;
-            final float nextY =
-                screenHeight - ((player.getY() + 1) * tileHeight);
-
-            centerX = computePosition(centerX, nextX, dv);
-            centerY = computePosition(centerY, nextY, dv);
-        }
-
-        batch.draw(playerTexture[0], centerX, centerY);
-
-        camera.position.set(centerX, centerY, 0);
+        camera.position.set(player.getRealX(), player.getRealY(), 0);
     }
 
     private TextureRegion getTerrainTexture(Terrain terrain)
@@ -285,6 +247,58 @@ System.out.format("MovePath %d -> %d,%d \n",rtnval,player.getX(),player.getY());
     public void resize(int width, int height)
     {
         batch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
+    }
+
+    public void send(CreateEvent evt)
+    {
+        switch (evt.getType()) {
+        case CREATE_MONSTER:
+            {
+                CreateMonsterEvent cmEvt = (CreateMonsterEvent) evt;
+
+                ICharacter ch = cmEvt.getCharacter();
+
+                ViewCharacter vc =
+                    new ViewCharacter(ch, cmEvt.getLevel(),
+                                      cmEvt.getX(), cmEvt.getY(), speed,
+                                      tileWidth, tileHeight);
+                characters.put(ch.getId(), vc);
+                //redraw = true;
+            }
+/*
+            System.out.format("Created monster %s(#%d) at %s:%d,%d\n",
+                              cmEvt.getCharacter().getName(),
+                              cmEvt.getCharacter().getId(),
+                              cmEvt.getLevel().getName(),
+                              cmEvt.getCharacter().getX(),
+                              cmEvt.getCharacter().getY());
+*/
+            break;
+        case CREATE_PLAYER:
+            {
+                CreatePlayerEvent cpEvt = (CreatePlayerEvent) evt;
+
+                ICharacter ch = cpEvt.getCharacter();
+
+                ViewCharacter vc =
+                    new ViewCharacter(ch, cpEvt.getLevel(),
+                                      cpEvt.getX(), cpEvt.getY(), speed,
+                                      tileWidth, tileHeight);
+                characters.put(ch.getId(), vc);
+                //redraw = true;
+            }
+/*
+            System.out.format("Created player %s(#%d) at %s:%d,%d\n",
+                              cpEvt.getCharacter().getName(),
+                              cpEvt.getCharacter().getId(),
+                              cpEvt.getLevel().getName(),
+                              cpEvt.getCharacter().getX(),
+                              cpEvt.getCharacter().getY());
+*/
+            break;
+        default:
+            throw new Error("Unknown event " + evt);
+        }
     }
 
     public void setSpeed(float speed)

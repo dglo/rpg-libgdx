@@ -29,7 +29,7 @@ public class RPG
         control = new GdxControl(TILE_WIDTH, TILE_HEIGHT);
 
         try {
-            player = Builder.build(123L);
+            player = Builder.build(view, 123L);
         } catch (CoreException ce) {
             ce.printStackTrace();
         }
