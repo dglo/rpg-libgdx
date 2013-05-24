@@ -14,10 +14,13 @@ import org.glowacki.core.ICharacter;
 import org.glowacki.core.ILevel;
 import org.glowacki.core.Terrain;
 import org.glowacki.rpg.event.CreateEvent;
+import org.glowacki.rpg.event.CreateListener;
 import org.glowacki.rpg.event.CreateMonsterEvent;
 import org.glowacki.rpg.event.CreatePlayerEvent;
-import org.glowacki.rpg.event.CreateListener;
 
+/**
+ * Manage texture assets
+ */
 class LevelTextures
 {
     private TextureRegion[][] tiles;
@@ -74,6 +77,9 @@ class LevelTextures
     }
 }
 
+/**
+ * Handle the view of the game
+ */
 public class GdxView
     implements CreateListener
 {
@@ -115,7 +121,7 @@ public class GdxView
 
     private void drawLevel(ICharacter ichar)
     {
-        final int screenWidth = Gdx.graphics.getWidth();
+        //final int screenWidth = Gdx.graphics.getWidth();
         final int screenHeight = Gdx.graphics.getHeight();
 
         if (!characters.containsKey(ichar.getId())) {
@@ -227,6 +233,11 @@ public class GdxView
         return region[0];
     }
 
+    /**
+     * Render this player
+     *
+     * @param player player
+     */
     public void render(ICharacter player)
     {
         // clear screen
@@ -244,11 +255,22 @@ public class GdxView
         camera.update();
     }
 
+    /**
+     * Handle a resize
+     *
+     * @param width new width
+     * @param height new height
+     */
     public void resize(int width, int height)
     {
         batch.getProjectionMatrix().setToOrtho2D(0, 0, width, height);
     }
 
+    /**
+     * Send an event
+     *
+     * @param evt creation event
+     */
     public void send(CreateEvent evt)
     {
         switch (evt.getType()) {
@@ -263,16 +285,7 @@ public class GdxView
                                       cmEvt.getX(), cmEvt.getY(), speed,
                                       tileWidth, tileHeight);
                 characters.put(ch.getId(), vc);
-                //redraw = true;
             }
-/*
-            System.out.format("Created monster %s(#%d) at %s:%d,%d\n",
-                              cmEvt.getCharacter().getName(),
-                              cmEvt.getCharacter().getId(),
-                              cmEvt.getLevel().getName(),
-                              cmEvt.getCharacter().getX(),
-                              cmEvt.getCharacter().getY());
-*/
             break;
         case CREATE_PLAYER:
             {
@@ -285,22 +298,18 @@ public class GdxView
                                       cpEvt.getX(), cpEvt.getY(), speed,
                                       tileWidth, tileHeight);
                 characters.put(ch.getId(), vc);
-                //redraw = true;
             }
-/*
-            System.out.format("Created player %s(#%d) at %s:%d,%d\n",
-                              cpEvt.getCharacter().getName(),
-                              cpEvt.getCharacter().getId(),
-                              cpEvt.getLevel().getName(),
-                              cpEvt.getCharacter().getX(),
-                              cpEvt.getCharacter().getY());
-*/
             break;
         default:
             throw new Error("Unknown event " + evt);
         }
     }
 
+    /**
+     * Set the animation speed
+     *
+     * @param speed animation speed
+     */
     public void setSpeed(float speed)
     {
         this.speed = speed;

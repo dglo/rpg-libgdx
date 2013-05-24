@@ -1,7 +1,8 @@
 package org.glowacki.rpg.core;
 
-import com.badlogic.gdx.Input.Keys;
-
+/**
+ * Encapsulate an input action
+ */
 public class InputAction
 {
     boolean useCoord;

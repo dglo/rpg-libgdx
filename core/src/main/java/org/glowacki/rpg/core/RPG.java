@@ -6,6 +6,9 @@ import com.badlogic.gdx.Gdx;
 import org.glowacki.core.CoreException;
 import org.glowacki.core.ICharacter;
 
+/**
+ * Main RPG class
+ */
 public class RPG
     implements ApplicationListener
 {
@@ -47,6 +50,11 @@ public class RPG
         System.out.println("Pause is not implemented");
     }
 
+    /**
+     * Process command-line arguments
+     *
+     * @param args command-line arguments
+     */
     public void processArgs(String[] args)
     {
         if (args.length > 0) {

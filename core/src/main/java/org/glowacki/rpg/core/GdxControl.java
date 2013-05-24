@@ -9,6 +9,9 @@ import org.glowacki.core.Direction;
 import org.glowacki.core.ICharacter;
 import org.glowacki.core.IMapPoint;
 
+/**
+ * Point
+ */
 class MyPoint
     implements IMapPoint
 {
@@ -54,7 +57,6 @@ class Input
     implements InputProcessor
 {
     private char lastKey;
-    private char thisKey;
     private int x;
     private int y;
     private boolean useTouch;
@@ -98,19 +100,6 @@ class Input
      */
     public synchronized boolean keyDown(int keycode)
     {
-/*
-        if (keycode == Keys.SHIFT_LEFT || keycode == Keys.SHIFT_RIGHT) {
-            shiftPressed = true;
-        } else {
-            clear();
-
-            lastKey = thisKey;
-            thisKey = keycode;
-            useTouch = false;
-        }
-
-        return true;
-*/
         return false;
     }
 
@@ -121,7 +110,7 @@ class Input
      *
      * @return whether the input was processed
      */
-    public boolean keyTyped(char character)
+    public synchronized boolean keyTyped(char character)
     {
         lastKey = character;
         return true;
@@ -225,6 +214,9 @@ class Input
     }
 }
 
+/**
+ * Handle the control of the game
+ */
 public class GdxControl
 {
     private int tileWidth;
@@ -241,6 +233,13 @@ public class GdxControl
         Gdx.input.setInputProcessor(input);
     }
 
+    /**
+     * Update this player
+     *
+     * @param player player
+     *
+     * @return <tt>true</tt> if the player has been updated
+     */
     public boolean update(ICharacter player)
     {
         InputAction action = input.getAction();
@@ -283,7 +282,7 @@ public class GdxControl
                     ce.printStackTrace();
                     return false;
                 }
-           }
+            }
 
             return true;
         }
@@ -313,7 +312,7 @@ public class GdxControl
             Gdx.app.exit();
             dir = Direction.UNKNOWN;
         } else {
-System.out.format("Ignore #%c\n", action.key);
+            System.out.format("Ignore #%c\n", action.key);
             dir = Direction.UNKNOWN;
         }
 

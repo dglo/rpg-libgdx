@@ -16,10 +16,13 @@ import org.glowacki.core.dungen.Room;
 import org.glowacki.core.dungen.RoomGenerator2;
 import org.glowacki.core.dungen.SimpleGenerator;
 import org.glowacki.core.dungen.Tunneler;
+import org.glowacki.rpg.event.CreateListener;
 import org.glowacki.rpg.event.CreateMonsterEvent;
 import org.glowacki.rpg.event.CreatePlayerEvent;
-import org.glowacki.rpg.event.CreateListener;
 
+/**
+ * Level which creates additional levels
+ */
 class DynamicLevel
     extends Level
 {
@@ -112,8 +115,21 @@ class DynamicLevel
     }
 }
 
+/**
+ * Level builder
+ */
 public abstract class Builder
 {
+    /**
+     * Build everything needed for the game
+     *
+     * @param creListener create event listener
+     * @param seed random number seed
+     *
+     * @return new character
+     *
+     * @throws CoreException if there is a problem
+     */
     public static ICharacter build(CreateListener creListener, long seed)
         throws CoreException
     {
