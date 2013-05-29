@@ -1,7 +1,5 @@
 package org.glowacki.rpg.core;
 
-import java.util.Random;
-
 import org.glowacki.core.ComputerCharacter;
 import org.glowacki.core.CoreException;
 import org.glowacki.core.ICharacter;
@@ -10,12 +8,14 @@ import org.glowacki.core.LevelException;
 import org.glowacki.core.Map;
 import org.glowacki.core.MapException;
 import org.glowacki.core.PlayerCharacter;
-import org.glowacki.core.dungen.CharMap;
 import org.glowacki.core.dungen.GeneratorException;
+import org.glowacki.core.dungen.IMapArray;
 import org.glowacki.core.dungen.Room;
 import org.glowacki.core.dungen.RoomGenerator2;
 import org.glowacki.core.dungen.SimpleGenerator;
 import org.glowacki.core.dungen.Tunneler;
+import org.glowacki.core.util.IRandom;
+import org.glowacki.core.util.Random;
 import org.glowacki.rpg.event.CreateListener;
 import org.glowacki.rpg.event.CreateMonsterEvent;
 import org.glowacki.rpg.event.CreatePlayerEvent;
@@ -34,11 +34,11 @@ class DynamicLevel
     private static final int maxConnections = 4;
     private static final int maxLevels = 5;
 
-    private Random random;
+    private IRandom random;
     private int level;
     private CreateListener creListener;
 
-    DynamicLevel(Random random, int level, Map map, CreateListener creListener)
+    DynamicLevel(IRandom random, int level, Map map, CreateListener creListener)
     {
         super("L" + level, map);
 
@@ -47,7 +47,7 @@ class DynamicLevel
         this.creListener = creListener;
     }
 
-    static Level OLDcreateLevel(Random random, int num,
+    static Level OLDcreateLevel(IRandom random, int num,
                              CreateListener creListener)
         throws GeneratorException
     {
@@ -74,14 +74,13 @@ class DynamicLevel
         return lvl;
     }
 
-    static Level createLevel(Random random, int num,
+    static Level createLevel(IRandom random, int num,
                              CreateListener creListener)
         throws GeneratorException
     {
-        CharMap charMap =
-            SimpleGenerator.createRooms(random, maxWidth, maxHeight,
-                                       gridWidth, gridHeight,
-                                       true, num < maxLevels);
+        IMapArray charMap =
+            SimpleGenerator.createMap(random, maxWidth, maxHeight, gridWidth,
+                                      gridHeight, true, num < maxLevels);
 
         String[] strMap = charMap.getStrings();
 
@@ -151,8 +150,7 @@ public abstract class Builder
         throws CoreException
     {
         for (int i = 0; i < max; i++) {
-            ComputerCharacter ch = new ComputerCharacter(6, 6, 6, 6,
-                                                         random.nextLong());
+            ComputerCharacter ch = new ComputerCharacter(random, 6, 6, 6, 6);
 
             ch.setLevel(lvl);
 
