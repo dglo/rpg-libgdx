@@ -112,6 +112,20 @@ class DynamicLevel
 
         return super.getNextLevel();
     }
+
+    private static void populate(Level lvl, IRandom random, int max,
+                                 CreateListener creListener)
+        throws CoreException
+    {
+        for (int i = 0; i < max; i++) {
+            ComputerCharacter ch = new ComputerCharacter(random, 6, 6, 6, 6);
+
+            ch.setLevel(lvl);
+
+            creListener.send(new CreateMonsterEvent(ch, lvl, ch.getX(),
+                                                    ch.getY()));
+        }
+    }
 }
 
 /**
@@ -143,19 +157,5 @@ public abstract class Builder
                                                ch.getY()));
 
         return ch;
-    }
-
-    private static void populate(Level lvl, Random random, int max,
-                                 CreateListener creListener)
-        throws CoreException
-    {
-        for (int i = 0; i < max; i++) {
-            ComputerCharacter ch = new ComputerCharacter(random, 6, 6, 6, 6);
-
-            ch.setLevel(lvl);
-
-            creListener.send(new CreateMonsterEvent(ch, lvl, ch.getX(),
-                                                    ch.getY()));
-        }
     }
 }
