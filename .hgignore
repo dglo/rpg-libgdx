@@ -3,3 +3,5 @@ target/
 
 *.class
 *.pyc
+
+android/libs
