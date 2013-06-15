@@ -259,6 +259,12 @@ public class GdxControl
             final int mapY =
                 1 + (int) (player.getY() - (moveY / (float) tileHeight));
 
+            if (!player.isSeen(mapX, mapY)) {
+                System.err.format("Position [%d,%d] is not visible\n",
+                                  mapX, mapY);
+                return false;
+            }
+
             if (mapX == player.getX() && mapY == player.getY()) {
                 // clicked on current position
                 if (player.onStaircase()) {
@@ -274,14 +280,14 @@ public class GdxControl
                 }
 
                 return false;
-            } else {
-                try {
-                    player.buildPath(new MyPoint((int) mapX, (int) mapY));
-                    int numTurns = player.movePath();
-                } catch (CoreException ce) {
-                    ce.printStackTrace();
-                    return false;
-                }
+            }
+
+            try {
+                player.buildPath(new MyPoint((int) mapX, (int) mapY));
+                int numTurns = player.movePath();
+            } catch (CoreException ce) {
+                ce.printStackTrace();
+                return false;
             }
 
             return true;

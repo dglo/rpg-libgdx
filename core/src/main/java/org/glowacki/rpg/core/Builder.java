@@ -3,6 +3,7 @@ package org.glowacki.rpg.core;
 import org.glowacki.core.ComputerCharacter;
 import org.glowacki.core.CoreException;
 import org.glowacki.core.ICharacter;
+import org.glowacki.core.ILevel;
 import org.glowacki.core.Level;
 import org.glowacki.core.LevelException;
 import org.glowacki.core.Map;
@@ -98,7 +99,7 @@ class DynamicLevel
         return lvl;
     }
 
-    public Level getNextLevel()
+    public ILevel getNextLevel()
     {
         if (super.getNextLevel() == null) {
             try {
@@ -115,12 +116,15 @@ class DynamicLevel
 
     private static void populate(Level lvl, IRandom random, int max,
                                  CreateListener creListener)
-        throws CoreException
     {
         for (int i = 0; i < max; i++) {
             ComputerCharacter ch = new ComputerCharacter(random, 6, 6, 6, 6);
 
-            ch.setLevel(lvl);
+            try {
+                ch.setLevel(lvl);
+            } catch (CoreException ce) {
+                throw new Error("Cannot add " + ch + " to " + lvl, ce);
+            }
 
             creListener.send(new CreateMonsterEvent(ch, lvl, ch.getX(),
                                                     ch.getY()));

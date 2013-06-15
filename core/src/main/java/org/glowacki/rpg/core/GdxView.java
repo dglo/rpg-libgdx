@@ -134,7 +134,6 @@ public class GdxView
 
         boolean[][] seen = player.getSeen();
 
-        // XXX should only recalculate this when something moves
         boolean[][] visible = player.getVisible();
 
         for (int x = 0; x <= level.getMaxX(); x++) {

@@ -16,9 +16,8 @@ import org.glowacki.core.event.StateEvent;
  * Character wrapper
  */
 public class ViewCharacter
-    implements Comparable, EventListener
+    implements Comparable<ICharacter>, EventListener
 {
-    private int id;
     private ICharacter ch;
     private ILevel level;
     private int x;
@@ -27,9 +26,6 @@ public class ViewCharacter
 
     private int tileWidth;
     private int tileHeight;
-
-    private boolean[][] seen;
-    private VisibleMap vmap;
 
     private float realX;
     private float realY;
@@ -50,7 +46,6 @@ public class ViewCharacter
     public ViewCharacter(ICharacter ch, ILevel level, int x, int y,
                          float speed, int tileWidth, int tileHeight)
     {
-        this.id = ch.getId();
         this.ch = ch;
         this.speed = speed;
         this.tileWidth = tileWidth;
@@ -68,18 +63,13 @@ public class ViewCharacter
      *
      * @return the usual values
      */
-    public int compareTo(Object obj)
+    public int compareTo(ICharacter other)
     {
-        if (obj == null) {
+        if (other == null) {
             return 1;
         }
 
-        if (!(obj instanceof ViewCharacter)) {
-            return getClass().getName().compareTo(obj.getClass().getName());
-        }
-
-        ViewCharacter vc = (ViewCharacter) obj;
-        return id - vc.id;
+        return ch.getId() - other.getId();
     }
 
     private float computePosition(float oldPos, float newPos, float dv)
@@ -122,9 +112,9 @@ public class ViewCharacter
      *
      * @return <tt>true</tt> if the objects are equal
      */
-    public boolean equals(Object obj)
+    public boolean equals(ICharacter ch)
     {
-        return compareTo(obj) == 0;
+        return compareTo(ch) == 0;
     }
 
     /**
@@ -134,7 +124,7 @@ public class ViewCharacter
      */
     public int getId()
     {
-        return id;
+        return ch.getId();
     }
 
     /**
@@ -154,7 +144,7 @@ public class ViewCharacter
      */
     public boolean[][] getSeen()
     {
-        return seen;
+        return ch.getSeenArray();
     }
 
     /**
@@ -164,7 +154,7 @@ public class ViewCharacter
      */
     public boolean[][] getVisible()
     {
-        return vmap.getVisible(x, y, ch.getSightDistance());
+        return ch.getVisible();
     }
 
     /**
@@ -187,26 +177,27 @@ public class ViewCharacter
         return realY;
     }
 
-/*
-    public int getX()
-    {
-        return x;
-    }
-
-    public int getY()
-    {
-        return y;
-    }
-*/
-
     /**
      * Hash code
      *
-     * @return character ID
+     * @return character hash code
      */
     public int hashCode()
     {
-        return id;
+        return ch.hashCode();
+    }
+
+    /**
+     * Is the specified point visible?
+     *
+     * @param px X coordinate
+     * @param py Y coordinate
+     *
+     * @return <tt>true</tt> if the point is visible
+     */
+    public boolean isVisible(int px, int py)
+    {
+        return ch.isVisible(px, py);
     }
 
     /**
@@ -326,9 +317,6 @@ public class ViewCharacter
         this.level = level;
         this.x = x;
         this.y = y;
-
-        seen = ch.getSeenArray();
-        vmap = new VisibleMap(level.getMap());
 
         realX = convertXToReal(x);
         realY = convertYToReal(y);
