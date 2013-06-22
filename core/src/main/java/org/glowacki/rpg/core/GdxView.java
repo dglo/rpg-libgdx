@@ -173,7 +173,7 @@ public class GdxView
             }
         }
 
-        for (ICharacter ch : level.getCharacters()) {
+        for (ICharacter ch : level.listCharacters()) {
             if (!visible[ch.getX()][ch.getY()]) {
                 continue;
             }
