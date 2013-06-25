@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 
 import org.glowacki.core.CoreException;
 import org.glowacki.core.ICharacter;
+import org.glowacki.core.util.Random;
 
 /**
  * Main RPG class
@@ -26,13 +27,17 @@ public class RPG
     @Override
     public void create()
     {
+        final long seed = 123L;
+
+        Random random = new Random(seed);
+
         view = new GdxView(TILE_WIDTH, TILE_HEIGHT);
         view.setSpeed(speed);
 
-        control = new GdxControl(TILE_WIDTH, TILE_HEIGHT);
+        control = new GdxControl(TILE_WIDTH, TILE_HEIGHT, random);
 
         try {
-            player = Builder.build(view, 123L);
+            player = Builder.build(view, random);
         } catch (CoreException ce) {
             ce.printStackTrace();
         }

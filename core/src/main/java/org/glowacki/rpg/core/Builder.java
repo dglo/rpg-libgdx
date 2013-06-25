@@ -2,6 +2,7 @@ package org.glowacki.rpg.core;
 
 import org.glowacki.core.ComputerCharacter;
 import org.glowacki.core.CoreException;
+import org.glowacki.core.FistWeapon;
 import org.glowacki.core.ICharacter;
 import org.glowacki.core.ILevel;
 import org.glowacki.core.Level;
@@ -16,7 +17,6 @@ import org.glowacki.core.dungen.RoomGenerator2;
 import org.glowacki.core.dungen.SimpleGenerator;
 import org.glowacki.core.dungen.Tunneler;
 import org.glowacki.core.util.IRandom;
-import org.glowacki.core.util.Random;
 import org.glowacki.rpg.event.CreateListener;
 import org.glowacki.rpg.event.CreateMonsterEvent;
 import org.glowacki.rpg.event.CreatePlayerEvent;
@@ -94,7 +94,7 @@ class DynamicLevel
 
         DynamicLevel lvl = new DynamicLevel(random, num, map, creListener);
 
-        //populate(lvl, random, 2, creListener);
+        populate(lvl, random, 2, creListener);
 
         return lvl;
     }
@@ -119,6 +119,7 @@ class DynamicLevel
     {
         for (int i = 0; i < max; i++) {
             ComputerCharacter ch = new ComputerCharacter(random, 6, 6, 6, 6);
+            ch.wield(new FistWeapon());
 
             try {
                 ch.setLevel(lvl);
@@ -147,11 +148,9 @@ public abstract class Builder
      *
      * @throws CoreException if there is a problem
      */
-    public static ICharacter build(CreateListener creListener, long seed)
+    public static ICharacter build(CreateListener creListener, IRandom random)
         throws CoreException
     {
-        Random random = new Random(seed);
-
         PlayerCharacter ch = new PlayerCharacter("me", 10, 10, 10, 10);
 
         Level topLvl = DynamicLevel.createLevel(random, 1, creListener);

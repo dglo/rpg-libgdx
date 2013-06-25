@@ -8,6 +8,7 @@ import org.glowacki.core.CoreException;
 import org.glowacki.core.Direction;
 import org.glowacki.core.ICharacter;
 import org.glowacki.core.IMapPoint;
+import org.glowacki.core.util.IRandom;
 
 /**
  * Point
@@ -221,13 +222,15 @@ public class GdxControl
 {
     private int tileWidth;
     private int tileHeight;
+    private IRandom random;
 
     private Input input;
 
-    public GdxControl(int tileWidth, int tileHeight)
+    public GdxControl(int tileWidth, int tileHeight, IRandom random)
     {
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
+        this.random = random;
 
         input = new Input();
         Gdx.input.setInputProcessor(input);
@@ -280,6 +283,28 @@ public class GdxControl
                 }
 
                 return false;
+            }
+
+            ICharacter occupant;
+            try {
+                occupant = player.getOccupant(mapX, mapY);
+            } catch (CoreException ce) {
+                ce.printStackTrace();
+                occupant = null;
+            }
+
+            if (occupant != null) {
+                // interact with another character
+                if (!occupant.isPlayer()) {
+                    try {
+                        player.attack(random, occupant);
+                    } catch (CoreException ce) {
+                        ce.printStackTrace();
+                        return false;
+                    }
+
+                    return true;
+                }
             }
 
             try {

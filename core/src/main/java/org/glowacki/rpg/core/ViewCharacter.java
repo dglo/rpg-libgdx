@@ -6,6 +6,10 @@ import org.glowacki.core.CoreException;
 import org.glowacki.core.ICharacter;
 import org.glowacki.core.ILevel;
 import org.glowacki.core.VisibleMap;
+import org.glowacki.core.event.AttackHitEvent;
+import org.glowacki.core.event.AttackKilledEvent;
+import org.glowacki.core.event.AttackMissedEvent;
+import org.glowacki.core.event.AttackParriedEvent;
 import org.glowacki.core.event.ChangeLevelEvent;
 import org.glowacki.core.event.CoreEvent;
 import org.glowacki.core.event.EventListener;
@@ -239,6 +243,30 @@ public class ViewCharacter
     public void send(CoreEvent evt)
     {
         switch (evt.getType()) {
+        case ATTACK_HIT:
+            {
+                AttackHitEvent hitEvt = (AttackHitEvent) evt;
+                System.out.println("!! " + hitEvt.getAttacker() + " hit " + hitEvt.getDefender());
+            }
+            break;
+        case ATTACK_KILLED:
+            {
+                AttackKilledEvent killEvt = (AttackKilledEvent) evt;
+                System.out.println("** " + killEvt.getAttacker() + " killed " + killEvt.getDefender());
+            }
+            break;
+        case ATTACK_MISSED:
+            {
+                AttackMissedEvent missEvt = (AttackMissedEvent) evt;
+                System.out.println("-- " + missEvt.getAttacker() + " missed " + missEvt.getDefender());
+            }
+            break;
+        case ATTACK_PARRIED:
+            {
+                AttackParriedEvent parryEvt = (AttackParriedEvent) evt;
+                System.out.println("<< " + parryEvt.getAttacker() + " parried " + parryEvt.getDefender());
+            }
+            break;
         case CHANGE_LEVEL:
             {
                 ChangeLevelEvent chgEvt = (ChangeLevelEvent) evt;
