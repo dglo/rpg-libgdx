@@ -356,6 +356,8 @@ public class GdxControl
                 // XXX
                 ce.printStackTrace();
             }
+
+            return true;
         }
 
         return false;

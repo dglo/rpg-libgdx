@@ -55,23 +55,6 @@ public class RPG
         System.out.println("Pause is not implemented");
     }
 
-    /**
-     * Process command-line arguments
-     *
-     * @param args command-line arguments
-     */
-    public void processArgs(String[] args)
-    {
-        if (args.length > 0) {
-            try {
-                float val = Float.parseFloat(args[0]);
-                speed = val;
-            } catch (NumberFormatException nfe) {
-                throw new Error("Bad speed \"" + args[0] + "\"");
-            }
-        }
-    }
-
     @Override
     public void render()
     {
@@ -102,5 +85,10 @@ public class RPG
     public void resume()
     {
         System.out.println("Resume is not implemented");
+    }
+
+    public void setSpeed(float speed)
+    {
+        this.speed = speed;
     }
 }
