@@ -19,7 +19,20 @@ import org.glowacki.rpg.event.CreateMonsterEvent;
 import org.glowacki.rpg.event.CreatePlayerEvent;
 
 /**
- * Manage texture assets
+ * Manage texture assets.
+ *
+ * This class expects a 1-dimensional array with the following textures:
+ * <ol>
+ * <li>unknown</li>
+ * <li>floor</li>
+ * <li>tunnel</li>
+ * <li>wall</li>
+ * <li>door</li>
+ * <li>upstairs</li>
+ * <li>downstairs</li>
+ * <li>water</li>
+ * <li>greyed-out</li>
+ * </ol>
  */
 class LevelTextures
 {
